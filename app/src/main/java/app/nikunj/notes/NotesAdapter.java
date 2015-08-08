@@ -250,6 +250,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         else if (deltaX < 0)
                             onSwipe(rootView, holder.getAdapterPosition(), true);
                         else
+
                             onSwipe(rootView, holder.getAdapterPosition(), false);
                         break;
                     case MotionEvent.ACTION_POINTER_DOWN:
