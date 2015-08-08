@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/**
+/** adapter for notes custom supports recycler view.
  * Created by nikam on 08-08-2015.
  */
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
@@ -28,6 +28,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         void onItemClick(View itemView, int position);
     }
 
+    // Define the listener interface
+    public interface OnItemDelete {
+        void onDelete(int position);
+    }
     // Provide a direct reference to each of the views within a data item
 // Used to cache the views within the item layout for fast access
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -37,6 +41,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         public TextView body;
         public ImageView image;
         public View root;
+        public int _id;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -62,6 +67,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     // Store the context for later use
     private Context context;
     public OnItemClickListener listener;
+    public OnItemDelete mDelete;
 
     // Pass in the context and users array into the constructor
     public NotesAdapter(Context context, ArrayList<Note> notes) {
@@ -72,6 +78,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     // Define the method that allows the parent activity or fragment to define the listener
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setonItemDelete(OnItemDelete delete) {
+        this.mDelete = delete;
     }
 
     @Override
@@ -115,6 +125,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         size = 60;
         int bodysize = size - note.body.length();
         if (bodysize < 10) bodysize = 10;
+        holder._id = note.id;
         holder.title.setText(note.title);
         holder.title.setTextSize(15);
         holder.body.setText(note.body);
@@ -157,8 +168,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             @Override
             public void onAnimationEnd(Animator animation) {
                 rootView.setVisibility(View.GONE);
-                notes.remove(position);
-                notifyItemRemoved(position);
+                mDelete.onDelete(position);
             }
 
             @Override

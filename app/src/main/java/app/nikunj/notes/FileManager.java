@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
 public class FileManager extends ActionBarActivity {
+    public static final String TAG = "FileManager";
     public NotesAdapter adapter;
     public RecyclerView rvUsers;
     public ArrayList<Note> notes;
@@ -48,6 +50,12 @@ public class FileManager extends ActionBarActivity {
                 Toast.makeText(FileManager.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
             }
         });
+        adapter.setonItemDelete(new NotesAdapter.OnItemDelete() {
+            @Override
+            public void onDelete(int position) {
+                deletedata(position);
+            }
+        });
 
         startloadingdata();
     }
@@ -74,7 +82,7 @@ public class FileManager extends ActionBarActivity {
         c= dbHelper.getAllNotes();
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            notes.add(new Note(c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX), c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX),""));
+            notes.add(new Note(c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX), c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX), "", c.getInt(NoteDatabaseHelper.COLUMN_ID_INDEX)));
             c.moveToNext();
         }
         c.close();
@@ -126,25 +134,52 @@ public class FileManager extends ActionBarActivity {
         if(dbHelper!=null)dbHelper.close();
     }
 
-    private ArrayList<Note> getThronesCharacters() {
-        ArrayList<Note> items = new ArrayList<>();
-        items.add(new Note("Dany Targaryen", "Valyria",""));
-        items.add(new Note("Rob Stark", "Winterfell",""));
-        items.add(new Note("Jon Snow", "Castle Black",""));
-        items.add(new Note("Tyvin Lanister", "King's Landing",""));
-        items.add(new Note("Agon Targaryen", "Valyria",""));
-        items.add(new Note("Sansa Stark", "Winterfell",""));
-        items.add(new Note("Arya Stark", "Winterfell",""));
-        items.add(new Note("Imp", "King's Landing",""));
-        return items;
+    /*    private ArrayList<Note> getThronesCharacters() {
+            ArrayList<Note> items = new ArrayList<>();
+            items.add(new Note("Dany Targaryen", "Valyria",""));
+            items.add(new Note("Rob Stark", "Winterfell",""));
+            items.add(new Note("Jon Snow", "Castle Black",""));
+            items.add(new Note("Tyvin Lanister", "King's Landing",""));
+            items.add(new Note("Agon Targaryen", "Valyria",""));
+            items.add(new Note("Sansa Stark", "Winterfell",""));
+            items.add(new Note("Arya Stark", "Winterfell",""));
+            items.add(new Note("Imp", "King's Landing",""));
+            return items;
 
 
 
-    }
-    private void adddata(){
+        }*/
+    private int adddata() {
         gridLayoutManager.scrollToPosition(0);
-        notes.add(0,new Note("threetitle", "body", "  "));
+        int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
+        Log.i(TAG, "database entry with id:" + id);
+        notes.add(0, new Note("Whites Walkers", "Westrossss", " ", id));
 // Notify the adapter
         adapter.notifyItemInserted(0);
+        return id;
+    }
+
+    private void deletedata(int position) {
+        int id = notes.get(position).id;
+        if (dbHelper.deleteNote(id)) Log.i(TAG, "row delte at id:" + id);
+        else {
+            Log.e(TAG, "not able to delete ID:" + id);
+            Log.d("nikunj", notes.toString());
+            String s = "";
+            for (Note n : notes) s += " " + n.id + " " + n.title;
+            Log.d("nikunj", s);
+
+            Cursor c = dbHelper.getAllNotes();
+            String trace = "";
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                trace += "id:" + c.getLong(NoteDatabaseHelper.COLUMN_ID_INDEX) + " title:" + c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX) + "\n";
+                c.moveToNext();
+            }
+            c.close();
+            Log.e(TAG, trace);
+        }
+        notes.remove(position);
+        adapter.notifyItemRemoved(position);
     }
 }

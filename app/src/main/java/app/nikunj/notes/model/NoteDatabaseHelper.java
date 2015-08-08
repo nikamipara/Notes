@@ -1,6 +1,6 @@
 package app.nikunj.notes.model;
 
-/**
+/** database for storing notes
  * Created by nikam on 09-08-2015.
  */
 
