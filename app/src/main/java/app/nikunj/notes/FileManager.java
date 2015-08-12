@@ -1,5 +1,6 @@
 package app.nikunj.notes;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -46,8 +47,7 @@ public class FileManager extends ActionBarActivity {
         adapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String name = notes.get(position).title;
-                Toast.makeText(FileManager.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
+                editNoteAt(position,false);
             }
         });
         adapter.setonItemDelete(new NotesAdapter.OnItemDelete() {
@@ -58,6 +58,25 @@ public class FileManager extends ActionBarActivity {
         });
 
         startloadingdata();
+    }
+    public static final int REQUEST_EDIT=5;
+    public static final int REQUEST_NEW=6;
+    public static final String NOTE_ID = "noteId";
+    public static final String POSITION = "position";
+    private void editNoteAt(int position,boolean isnewNote) {
+        if(isnewNote){
+            Intent i = new Intent(this,EditNoteActivity.class) ;
+            i.putExtra(NOTE_ID,-1);
+            startActivityForResult(i,REQUEST_NEW);
+        }else{
+            long id = notes.get(position).id;
+            Intent i = new Intent(this,EditNoteActivity.class) ;
+            i.putExtra(NOTE_ID,id);
+            i.putExtra(POSITION,position);
+            startActivityForResult(i, REQUEST_EDIT);
+        }
+        //String name = notes.get(position).title;
+        //Toast.makeText(FileManager.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
     }
 
     private void startloadingdata() {
@@ -121,10 +140,65 @@ public class FileManager extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }else if(id==R.id.add){
-            adddata();
+            /*adddata();*/
+            editNoteAt(-1,true);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("nikunj","onactivity result");
+       // if (requestCode == REQUEST_EDIT) {
+            Log.d("nikunj","requestCode:REQUEST_EDIT");
+            if(data!=null){
+                Log.d("nikunj","data not null");
+                boolean isUpdated = data.getBooleanExtra(EditNoteActivity.IS_UPDATED,true);
+                int position = data.getIntExtra(POSITION, -1);
+                long noteId = data.getLongExtra(NOTE_ID, -1);
+                updateList(isUpdated, position, noteId);
+            }
+        //} else if (requestCode == REQUEST_NEW) {
+            Log.d("nikunj","requestCode:REQUEST_NEw");
+       // }
+    }
+
+    private void updateList(boolean isUpdated, int position,long id) {
+        if(id<=0)return;
+        Note newNote = getNoteFromDatabase(id);
+        if(position==-1){
+            if(newNote!=null){
+                adddNewNoteInList(newNote);
+            }
+        }else{
+            if(newNote!=null){
+                updateNoteInList(newNote, position);
+            }
+        }
+    }
+
+    private void updateNoteInList(Note newNote, int position) {
+        gridLayoutManager.scrollToPosition(position);
+        //int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
+        // Log.i(TAG, "database entry with id:" + id);
+        Note n = notes.get(position);
+        n.title = newNote.title;
+        n.body = newNote.body;
+        //notes.get
+// Notify the adapter
+        adapter.notifyItemChanged(position);
+       // adapter.notifyDataSetChanged();
+    }
+
+    private Note getNoteFromDatabase(long id) {
+        Cursor c = dbHelper.getNote(id);
+        if(c!=null){
+            c.moveToFirst();
+            String title =c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX);
+            String body =c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX);
+            return new Note(title,body,"",(int)id);
+        }return null;
     }
 
     @Override
@@ -149,19 +223,35 @@ public class FileManager extends ActionBarActivity {
 
 
         }*/
-    private int adddata() {
+    private void adddNewNoteInList(Note note) {
         gridLayoutManager.scrollToPosition(0);
-        int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
-        Log.i(TAG, "database entry with id:" + id);
-        notes.add(0, new Note("Whites Walkers", "Westrossss", " ", id));
-// Notify the adapter
+        //int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
+       // Log.i(TAG, "database entry with id:" + id);
+        notes.add(0, note);
+       // Notify the adapter
         adapter.notifyItemInserted(0);
-        return id;
+      //  adapter.notifyDataSetChanged();;
+
     }
 
     private void deletedata(int position) {
+       try{ gridLayoutManager.assertNotInLayoutOrScroll("delete not permitted.");
+       }
+       catch (IllegalStateException e){
+           e.printStackTrace();
+           return;
+       }
+        if(position<0 || position>notes.size()-1/*|| id>notes.size()-1*/) {
+            Log.e(TAG,"illigal position"+position);
+            adapter.notifyDataSetChanged();
+            return;
+        }
         int id = notes.get(position).id;
-        if (dbHelper.deleteNote(id)) Log.i(TAG, "row delte at id:" + id);
+        if(id<0 /*|| id>notes.size()-1*/) {
+            Log.e(TAG,"illigal id"+id);
+            return;
+        }
+        if (dbHelper.deleteNote(id)) Log.i(TAG, "row delete at id:" + id);
         else {
             Log.e(TAG, "not able to delete ID:" + id);
             Log.d("nikunj", notes.toString());
