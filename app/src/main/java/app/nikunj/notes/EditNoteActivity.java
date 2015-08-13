@@ -18,23 +18,26 @@ public class EditNoteActivity extends ActionBarActivity {
     private NoteDatabaseHelper dbHelper;
     private int mPosition;
     private long mNoteId;
+
     private void setupdatabase() {
         dbHelper = new NoteDatabaseHelper(this);
         dbHelper.open();
     }
-    private Note getdata(long noteID){
-        if(dbHelper!=null){
-            Cursor c =  dbHelper.getNote(noteID);
-            if(c!=null && c.getCount()>0){
+
+    private Note getdata(long noteID) {
+        if (dbHelper != null) {
+            Cursor c = dbHelper.getNote(noteID);
+            if (c != null && c.getCount() > 0) {
                 c.moveToFirst();
                 String title = c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX);
                 String body = c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX);
-                return new Note(title,body,"",(int)noteID);
-            }else{
-                Toast.makeText(this, "invalid id :"+noteID, Toast.LENGTH_SHORT).show();
+                return new Note(title, body, "", (int) noteID);
+            } else {
+                Toast.makeText(this, "invalid id :" + noteID, Toast.LENGTH_SHORT).show();
                 return null;
             }
-        }return null;
+        }
+        return null;
     }
 
     private boolean saveData(long noteID) {
@@ -43,6 +46,8 @@ public class EditNoteActivity extends ActionBarActivity {
         String newBody = mBody.getText().toString();
 
         if (noteID == -1) {
+            if ((newTitle == null || newTitle.isEmpty()) && (newBody == null || newBody.isEmpty()))
+                return false;
             //new data to be entered. save the id of new data and it will be returned to the view.
             long newNoteId = dbHelper.createNote(newTitle, newBody);
             mNoteId = newNoteId;
@@ -58,6 +63,7 @@ public class EditNoteActivity extends ActionBarActivity {
             }
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,38 +72,39 @@ public class EditNoteActivity extends ActionBarActivity {
 
 
         Intent i = getIntent();
-        if(i!=null){
-           if(i.hasExtra(FileManager.NOTE_ID)){
+        if (i != null) {
+            if (i.hasExtra(FileManager.NOTE_ID)) {
                 mNoteId = i.getLongExtra(FileManager.NOTE_ID, -1);
-                mPosition = i.getIntExtra(FileManager.POSITION,-1);
-               Toast.makeText(this,"data got id:"+mNoteId+"position="+mPosition,Toast.LENGTH_LONG).show();
-               filldata(mNoteId,mPosition);
-           }else{
-               //TODO add result failed code ore something
-               setResult(RESULT_CANCELED);
-               finish();
-           }
-        }
-        else{
+                mPosition = i.getIntExtra(FileManager.POSITION, -1);
+                Toast.makeText(this, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
+                filldata(mNoteId, mPosition);
+            } else {
+                //TODO add result failed code ore something
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        } else {
             //TODO add result failed code ore something.
             setResult(RESULT_CANCELED);
             finish();
         }
     }
+
     private EditText mTitle;
     private EditText mBody;
+
     private void init() {
         setupdatabase();
-        mTitle = (EditText)findViewById(R.id.editTextTitle);
-        mBody = (EditText)findViewById(R.id.editTextBody);
+        mTitle = (EditText) findViewById(R.id.editTextTitle);
+        mBody = (EditText) findViewById(R.id.editTextBody);
     }
 
     private void filldata(long noteId, int position) {
-        if(noteId<0){
+        if (noteId < 0) {
             //no need to do anything
-        }else{
+        } else {
             Note n;
-            if((n =getdata(noteId))!=null){
+            if ((n = getdata(noteId)) != null) {
                 initializeTitle(n.title);
                 initializeBody(n.body);
             }
@@ -105,11 +112,11 @@ public class EditNoteActivity extends ActionBarActivity {
     }
 
     private void initializeBody(String body) {
-        if(mBody!=null) mBody.setText(body);
+        if (mBody != null) mBody.setText(body);
     }
 
     private void initializeTitle(String title) {
-       if(mTitle!=null) mTitle.setText(title);
+        if (mTitle != null) mTitle.setText(title);
     }
 
 
@@ -139,18 +146,18 @@ public class EditNoteActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         //
-        saveData(mNoteId);
-        //TODO setresult
-        setResultOK();
+        if (saveData(mNoteId))
+            setResultOK();
+        else setResult(RESULT_CANCELED);
         /*super.onBackPressed();*/
         finish();
     }
 
     private void setResultOK() {
         Intent data = new Intent();
-        data.putExtra(IS_UPDATED,true);
-        data.putExtra(FileManager.POSITION,mPosition);
-        data.putExtra(FileManager.NOTE_ID,mNoteId);
+        data.putExtra(IS_UPDATED, true);
+        data.putExtra(FileManager.POSITION, mPosition);
+        data.putExtra(FileManager.NOTE_ID, mNoteId);
         setResult(RESULT_OK, data);
     }
 
@@ -163,7 +170,5 @@ public class EditNoteActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //saveData(mNoteId);
-        //setResultOK();
     }
 }
