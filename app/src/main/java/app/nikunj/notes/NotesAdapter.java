@@ -17,7 +17,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/** adapter for notes custom supports recycler view.
+/**
+ * adapter for notes custom supports recycler view.
  * Created by nikam on 08-08-2015.
  */
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
@@ -32,6 +33,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     public interface OnItemDelete {
         void onDelete(int position);
     }
+
     // Provide a direct reference to each of the views within a data item
 // Used to cache the views within the item layout for fast access
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -73,6 +75,25 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     public NotesAdapter(Context context, ArrayList<Note> notes) {
         this.notes = notes;
         this.context = context;
+    }
+
+    public static String trimTitle(String title) {
+        if (title.length() < 20) return title;
+        return title.substring(0, 20);
+    }
+
+    public static String trimBody(String body) {
+        String[] lines = body.split("\r\n|\r|\n");
+        if (lines.length < 10)
+            return body;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(lines[i] + "\n");
+        }
+
+        if (sb.length() < 200) return sb.toString();
+        return sb.substring(0, 200);
     }
 
     // Define the method that allows the parent activity or fragment to define the listener
@@ -118,7 +139,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     private void populate(ViewHolder holder, int position) {
-        Note note = notes.get(position);
+        app.nikunj.notes.Note note = notes.get(position);
         int size = 30;/*
         int titlesize = size -note.title.length();
         if(titlesize<8)titlesize=;*/
@@ -126,9 +147,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         int bodysize = size - note.body.length();
         if (bodysize < 10) bodysize = 10;
         holder._id = note.id;
-        holder.title.setText(note.title);
+        holder.title.setText(trimTitle(note.title));
         holder.title.setTextSize(15);
-        holder.body.setText(note.body);
+        holder.body.setText(trimBody(note.body));
         holder.body.setTextSize(bodysize);
     }
 
