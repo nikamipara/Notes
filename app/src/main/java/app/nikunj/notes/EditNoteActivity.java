@@ -75,9 +75,9 @@ public class EditNoteActivity extends ActionBarActivity {
 
         Intent i = getIntent();
         if (i != null) {
-            if (i.hasExtra(FileManager.NOTE_ID)) {
-                mNoteId = i.getLongExtra(FileManager.NOTE_ID, -1);
-                mPosition = i.getIntExtra(FileManager.POSITION, -1);
+            if (i.hasExtra(FileManagerActivity.NOTE_ID)) {
+                mNoteId = i.getLongExtra(FileManagerActivity.NOTE_ID, -1);
+                mPosition = i.getIntExtra(FileManagerActivity.POSITION, -1);
                 Toast.makeText(this, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
                 filldata(mNoteId, mPosition);
             } else {
@@ -149,8 +149,8 @@ public class EditNoteActivity extends ActionBarActivity {
     private void setResultOK() {
         Intent data = new Intent();
         data.putExtra(IS_UPDATED, true);
-        data.putExtra(FileManager.POSITION, mPosition);
-        data.putExtra(FileManager.NOTE_ID, mNoteId);
+        data.putExtra(FileManagerActivity.POSITION, mPosition);
+        data.putExtra(FileManagerActivity.NOTE_ID, mNoteId);
         setResult(RESULT_OK, data);
     }
 

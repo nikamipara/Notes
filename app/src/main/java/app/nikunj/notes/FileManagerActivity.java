@@ -1,5 +1,6 @@
 package app.nikunj.notes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,39 +11,38 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
-public class FileManager extends ActionBarActivity {
-    public static final String TAG = "FileManager";
+public class FileManagerActivity extends ActionBarActivity {
+    public static final String TAG = "FileManagerActivity";
     public NotesAdapter adapter;
-    public RecyclerView rvUsers;
+    public RecyclerView recyclerViewNotes;
     public ArrayList<Note> notes;
     public StaggeredGridLayoutManager gridLayoutManager;
-    public NoteDatabaseHelper dbHelper;
+    public NoteDatabaseHelper dataHelper;
+    public Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_manager);
-
-
+        mContext = this;
         // Lookup the recyclerview in activity layout
-         rvUsers = (RecyclerView) findViewById(R.id.rvUsers);
+         recyclerViewNotes = (RecyclerView) findViewById(R.id.recycler_view_notes);
         // Create adapter passing in the sample user data
          notes = new ArrayList<>();
-         adapter = new NotesAdapter(this,notes);
+         adapter = new NotesAdapter(mContext,notes);
         // Attach the adapter to the recyclerview to populate items
-        rvUsers.setAdapter(adapter);
+        recyclerViewNotes.setAdapter(adapter);
         // Set layout manager to position the items
         // First param is number of columns and second param is orientation i.e Vertical or Horizontal
          gridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
 // Attach the layout manager to the recycler view
-        rvUsers.setLayoutManager(gridLayoutManager);
+        recyclerViewNotes.setLayoutManager(gridLayoutManager);
 
         adapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
@@ -65,40 +65,40 @@ public class FileManager extends ActionBarActivity {
     public static final String POSITION = "position";
     private void editNoteAt(int position,boolean isnewNote) {
         if(isnewNote){
-            Intent i = new Intent(this,EditNoteActivity.class) ;
+            Intent i = new Intent(mContext,EditNoteActivity.class) ;
             i.putExtra(NOTE_ID,-1);
             startActivityForResult(i,REQUEST_NEW);
         }else{
             long id = notes.get(position).id;
-            Intent i = new Intent(this,EditNoteActivity.class) ;
+            Intent i = new Intent(mContext,EditNoteActivity.class) ;
             i.putExtra(NOTE_ID,id);
             i.putExtra(POSITION,position);
             startActivityForResult(i, REQUEST_EDIT);
         }
         //String name = notes.get(position).title;
-        //Toast.makeText(FileManager.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(FileManagerActivity.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
     }
 
     private void startloadingdata() {
 
         setupdatabase();
-        Cursor c = dbHelper.getAllNotes();
+        Cursor c = dataHelper.getAllNotes();
         int noofrows = c.getCount();
         if(noofrows==0){
-            dbHelper.createNote("Dany Targaryen", "Valyria");
-            dbHelper.createNote("Rob Stark", "Winterfell");
-            dbHelper.createNote("Jon Snow", "Castle Black");
-            dbHelper.createNote("Jon Snow", "Castle Black");
-            dbHelper.createNote("Tyvin Lanister", "King's Landing");
-            dbHelper.createNote("Agon Targaryen", "Valyria");
-            dbHelper.createNote("Tyvin Lanister", "King's Landing");
-            dbHelper.createNote("Arya Stark", "Winterfell");
-            dbHelper.createNote("Imp", "King's Landing");
-            dbHelper.createNote("Dany Targaryen", "Valyria");
+            dataHelper.createNote("Dany Targaryen", "Valyria");
+            dataHelper.createNote("Rob Stark", "Winterfell");
+            dataHelper.createNote("Jon Snow", "Castle Black");
+            dataHelper.createNote("Jon Snow", "Castle Black");
+            dataHelper.createNote("Tyvin Lanister", "King's Landing");
+            dataHelper.createNote("Agon Targaryen", "Valyria");
+            dataHelper.createNote("Tyvin Lanister", "King's Landing");
+            dataHelper.createNote("Arya Stark", "Winterfell");
+            dataHelper.createNote("Imp", "King's Landing");
+            dataHelper.createNote("Dany Targaryen", "Valyria");
 
         }
         c.close();
-        c= dbHelper.getAllNotes();
+        c= dataHelper.getAllNotes();
         c.moveToFirst();
         while (!c.isAfterLast()) {
             notes.add(new Note(c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX), c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX), "", c.getInt(NoteDatabaseHelper.COLUMN_ID_INDEX)));
@@ -117,8 +117,8 @@ public class FileManager extends ActionBarActivity {
     }
 
     private void setupdatabase() {
-        dbHelper = new NoteDatabaseHelper(this);
-        dbHelper.open();
+        dataHelper = new NoteDatabaseHelper(mContext);
+        dataHelper.open();
 
     }
 
@@ -180,7 +180,7 @@ public class FileManager extends ActionBarActivity {
 
     private void updateNoteInList(Note newNote, int position) {
         gridLayoutManager.scrollToPosition(position);
-        //int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
+        //int id = (int) dataHelper.createNote("Whites Walkers", "Westrossss");
         // Log.i(TAG, "database entry with id:" + id);
         Note n = notes.get(position);
         n.title = newNote.title;
@@ -192,7 +192,7 @@ public class FileManager extends ActionBarActivity {
     }
 
     private Note getNoteFromDatabase(long id) {
-        Cursor c = dbHelper.getNote(id);
+        Cursor c = dataHelper.getNote(id);
         if(c!=null){
             c.moveToFirst();
             String title =c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX);
@@ -205,7 +205,7 @@ public class FileManager extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(dbHelper!=null)dbHelper.close();
+        if(dataHelper !=null) dataHelper.close();
     }
 
     /*    private ArrayList<Note> getThronesCharacters() {
@@ -225,7 +225,7 @@ public class FileManager extends ActionBarActivity {
         }*/
     private void adddNewNoteInList(Note note) {
         gridLayoutManager.scrollToPosition(0);
-        //int id = (int) dbHelper.createNote("Whites Walkers", "Westrossss");
+        //int id = (int) dataHelper.createNote("Whites Walkers", "Westrossss");
        // Log.i(TAG, "database entry with id:" + id);
         notes.add(0, note);
        // Notify the adapter
@@ -251,7 +251,7 @@ public class FileManager extends ActionBarActivity {
             Log.e(TAG,"illigal id"+id);
             return;
         }
-        if (dbHelper.deleteNote(id)) Log.i(TAG, "row delete at id:" + id);
+        if (dataHelper.deleteNote(id)) Log.i(TAG, "row delete at id:" + id);
         else {
             Log.e(TAG, "not able to delete ID:" + id);
             Log.d("nikunj", notes.toString());
@@ -259,7 +259,7 @@ public class FileManager extends ActionBarActivity {
             for (Note n : notes) s += " " + n.id + " " + n.title;
             Log.d("nikunj", s);
 
-            Cursor c = dbHelper.getAllNotes();
+            Cursor c = dataHelper.getAllNotes();
             String trace = "";
             c.moveToFirst();
             while (!c.isAfterLast()) {
