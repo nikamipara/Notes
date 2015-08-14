@@ -2,8 +2,8 @@ package app.nikunj.notes;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,13 +18,15 @@ public class EditNoteActivity extends ActionBarActivity {
     private NoteDatabaseHelper dbHelper;
     private int mPosition;
     private long mNoteId;
+    private EditText mTitle;
+    private EditText mBody;
 
     private void setupdatabase() {
         dbHelper = new NoteDatabaseHelper(this);
         dbHelper.open();
     }
 
-    private Note getdata(long noteID) {
+    private Note getData(long noteID) {
         if (dbHelper != null) {
             Cursor c = dbHelper.getNote(noteID);
             if (c != null && c.getCount() > 0) {
@@ -90,8 +92,6 @@ public class EditNoteActivity extends ActionBarActivity {
         }
     }
 
-    private EditText mTitle;
-    private EditText mBody;
 
     private void init() {
         setupdatabase();
@@ -104,37 +104,31 @@ public class EditNoteActivity extends ActionBarActivity {
             //no need to do anything
         } else {
             Note n;
-            if ((n = getdata(noteId)) != null) {
-                initializeTitle(n.title);
-                initializeBody(n.body);
+            if ((n = getData(noteId)) != null) {
+                setTextTitle(n.title);
+                setTextBody(n.body);
             }
         }
     }
 
-    private void initializeBody(String body) {
+    private void setTextBody(String body) {
         if (mBody != null) mBody.setText(body);
     }
 
-    private void initializeTitle(String title) {
+    private void setTextTitle(String title) {
         if (mTitle != null) mTitle.setText(title);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_edit_note, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
             onBackPressed();
             return true;
@@ -149,7 +143,6 @@ public class EditNoteActivity extends ActionBarActivity {
         if (saveData(mNoteId))
             setResultOK();
         else setResult(RESULT_CANCELED);
-        /*super.onBackPressed();*/
         finish();
     }
 
