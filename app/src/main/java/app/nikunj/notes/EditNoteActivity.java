@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import app.nikunj.notes.model.NoteDatabaseHelper;
+import app.nikunj.notes.presenter.Constants;
 
 public class EditNoteActivity extends ActionBarActivity {
     public static final String IS_UPDATED = "isnoteupdated";
@@ -75,9 +76,9 @@ public class EditNoteActivity extends ActionBarActivity {
 
         Intent i = getIntent();
         if (i != null) {
-            if (i.hasExtra(FileManagerActivity.NOTE_ID)) {
-                mNoteId = i.getLongExtra(FileManagerActivity.NOTE_ID, -1);
-                mPosition = i.getIntExtra(FileManagerActivity.POSITION, -1);
+            if (i.hasExtra(Constants.NOTE_ID)) {
+                mNoteId = i.getLongExtra(Constants.NOTE_ID, -1);
+                mPosition = i.getIntExtra(Constants.POSITION, -1);
                 Toast.makeText(this, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
                 filldata(mNoteId, mPosition);
             } else {
@@ -149,8 +150,8 @@ public class EditNoteActivity extends ActionBarActivity {
     private void setResultOK() {
         Intent data = new Intent();
         data.putExtra(IS_UPDATED, true);
-        data.putExtra(FileManagerActivity.POSITION, mPosition);
-        data.putExtra(FileManagerActivity.NOTE_ID, mNoteId);
+        data.putExtra(Constants.POSITION, mPosition);
+        data.putExtra(Constants.NOTE_ID, mNoteId);
         setResult(RESULT_OK, data);
     }
 

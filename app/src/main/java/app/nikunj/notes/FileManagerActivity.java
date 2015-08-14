@@ -1,50 +1,57 @@
 package app.nikunj.notes;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import java.util.ArrayList;
 
 import app.nikunj.notes.model.NoteDatabaseHelper;
+import app.nikunj.notes.presenter.FileManager;
 
 public class FileManagerActivity extends ActionBarActivity {
+    /*    public static final int REQUEST_EDIT=5;
+        public static final int REQUEST_NEW=6;
+        public static final String NOTE_ID = "noteId";
+        public static final String POSITION = "position";*/
     public static final String TAG = "FileManagerActivity";
-    public NotesAdapter adapter;
-    public RecyclerView recyclerViewNotes;
-    public ArrayList<Note> notes;
-    public StaggeredGridLayoutManager gridLayoutManager;
+
+    //public ArrayList<Note> notes;
+
+    public Activity mActivity;
+    private FileManager fm;
     public NoteDatabaseHelper dataHelper;
-    public Context mContext;
+
+    //public RecyclerView recyclerViewNotes;
+    //public StaggeredGridLayoutManager gridLayoutManager;
+    // public NotesAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_manager);
-        mContext = this;
+        mActivity = this;
+        fm = new FileManager(mActivity);
         // Lookup the recyclerview in activity layout
-         recyclerViewNotes = (RecyclerView) findViewById(R.id.recycler_view_notes);
+        //TODO setrecyclerview
+        setRecyclerView(R.id.recycler_view_notes);
+        //recyclerViewNotes = (RecyclerView) findViewById(R.id.recycler_view_notes);
         // Create adapter passing in the sample user data
-         notes = new ArrayList<>();
-         adapter = new NotesAdapter(mContext,notes);
+        //notes = new ArrayList<>();
+        //adapter = new NotesAdapter(mActivity,notes);
+        //TODO init adapter.
         // Attach the adapter to the recyclerview to populate items
-        recyclerViewNotes.setAdapter(adapter);
+        //set recycler...
+        //recyclerViewNotes.setAdapter(adapter);
         // Set layout manager to position the items
         // First param is number of columns and second param is orientation i.e Vertical or Horizontal
-         gridLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //gridLayoutManager =
+        //     new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
 // Attach the layout manager to the recycler view
-        recyclerViewNotes.setLayoutManager(gridLayoutManager);
+        //recyclerViewNotes.setLayoutManager(gridLayoutManager);
 
-        adapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
+       /* adapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 editNoteAt(position,false);
@@ -55,33 +62,29 @@ public class FileManagerActivity extends ActionBarActivity {
             public void onDelete(int position) {
                 deletedata(position);
             }
-        });
+        });*/
 
         startloadingdata();
     }
-    public static final int REQUEST_EDIT=5;
-    public static final int REQUEST_NEW=6;
-    public static final String NOTE_ID = "noteId";
-    public static final String POSITION = "position";
-    private void editNoteAt(int position,boolean isnewNote) {
+    /*private void editNoteAt(int position,boolean isnewNote) {
         if(isnewNote){
-            Intent i = new Intent(mContext,EditNoteActivity.class) ;
+            Intent i = new Intent(mActivity,EditNoteActivity.class) ;
             i.putExtra(NOTE_ID,-1);
             startActivityForResult(i,REQUEST_NEW);
         }else{
             long id = notes.get(position).id;
-            Intent i = new Intent(mContext,EditNoteActivity.class) ;
+            Intent i = new Intent(mActivity,EditNoteActivity.class) ;
             i.putExtra(NOTE_ID,id);
             i.putExtra(POSITION,position);
             startActivityForResult(i, REQUEST_EDIT);
         }
         //String name = notes.get(position).title;
         //Toast.makeText(FileManagerActivity.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
-    }
+    }*/
 
     private void startloadingdata() {
-
-        setupdatabase();
+        fm.startloadingdata();
+        /*setupdatabase();
         Cursor c = dataHelper.getAllNotes();
         int noofrows = c.getCount();
         if(noofrows==0){
@@ -106,7 +109,7 @@ public class FileManagerActivity extends ActionBarActivity {
         }
         c.close();
         adapter.notifyDataSetChanged();
-        /*notes.add(new Note("Dany Targaryen", "Valyria", ""));
+        *//**//*notes.add(new Note("Dany Targaryen", "Valyria", ""));
         notes.add(new Note("Rob Stark", "Winterfell",""));
         notes.add(new Note("Jon Snow", "Castle Black", ""));
         notes.add(new Note("Tyvin Lanister", "King's Landing",""));
@@ -116,11 +119,11 @@ public class FileManagerActivity extends ActionBarActivity {
         notes.add(new Note("Imp", "King's Landing", ""));*/
     }
 
-    private void setupdatabase() {
-        dataHelper = new NoteDatabaseHelper(mContext);
+   /* private void setupdatabase() {
+        dataHelper = new NoteDatabaseHelper(mActivity);
         dataHelper.open();
 
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,7 +134,7 @@ public class FileManagerActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        /*// Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
@@ -140,16 +143,21 @@ public class FileManagerActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }else if(id==R.id.add){
-            /*adddata();*/
+            *//*adddata();*//*
             editNoteAt(-1,true);
-        }
-
+        }*/
+        fm.onOptionsItemSelected(item);
         return super.onOptionsItemSelected(item);
     }
 
+    /*private void editNoteAt(int position,boolean isnewNote) {
+        fm.editNoteAt(position,isnewNote);
+    }*/
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("nikunj","onactivity result");
+        fm.onActivityResult(requestCode, resultCode, data);
+        /*Log.d("nikunj", "onactivity result");
        // if (requestCode == REQUEST_EDIT) {
             Log.d("nikunj","requestCode:REQUEST_EDIT");
             if(data!=null){
@@ -160,11 +168,11 @@ public class FileManagerActivity extends ActionBarActivity {
                 updateList(isUpdated, position, noteId);
             }
         //} else if (requestCode == REQUEST_NEW) {
-            Log.d("nikunj","requestCode:REQUEST_NEw");
-       // }
+        Log.d("nikunj", "requestCode:REQUEST_NEw");
+       // }*/
     }
 
-    private void updateList(boolean isUpdated, int position,long id) {
+    /*private void updateList(boolean isUpdated, int position,long id) {
         if(id<=0)return;
         Note newNote = getNoteFromDatabase(id);
         if(position==-1){
@@ -189,9 +197,9 @@ public class FileManagerActivity extends ActionBarActivity {
 // Notify the adapter
         adapter.notifyItemChanged(position);
        // adapter.notifyDataSetChanged();
-    }
+    }*/
 
-    private Note getNoteFromDatabase(long id) {
+    /*private Note getNoteFromDatabase(long id) {
         Cursor c = dataHelper.getNote(id);
         if(c!=null){
             c.moveToFirst();
@@ -199,13 +207,18 @@ public class FileManagerActivity extends ActionBarActivity {
             String body =c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX);
             return new Note(title,body,"",(int)id);
         }return null;
-    }
+    }*/
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        fm.onDestroy();
+        fm = null;
 
-        if(dataHelper !=null) dataHelper.close();
+    }
+
+    public void setRecyclerView(int recyclerViewId) {
+        fm.setRecyclerView(recyclerViewId);
     }
 
     /*    private ArrayList<Note> getThronesCharacters() {
@@ -223,7 +236,7 @@ public class FileManagerActivity extends ActionBarActivity {
 
 
         }*/
-    private void adddNewNoteInList(Note note) {
+    /*private void adddNewNoteInList(Note note) {
         gridLayoutManager.scrollToPosition(0);
         //int id = (int) dataHelper.createNote("Whites Walkers", "Westrossss");
        // Log.i(TAG, "database entry with id:" + id);
@@ -241,13 +254,13 @@ public class FileManagerActivity extends ActionBarActivity {
            e.printStackTrace();
            return;
        }
-        if(position<0 || position>notes.size()-1/*|| id>notes.size()-1*/) {
+        if(position<0 || position>notes.size()-1*//*|| id>notes.size()-1*//*) {
             Log.e(TAG,"illigal position"+position);
             adapter.notifyDataSetChanged();
             return;
         }
         int id = notes.get(position).id;
-        if(id<0 /*|| id>notes.size()-1*/) {
+        if(id<0 *//*|| id>notes.size()-1*//*) {
             Log.e(TAG,"illigal id"+id);
             return;
         }
@@ -271,5 +284,5 @@ public class FileManagerActivity extends ActionBarActivity {
         }
         notes.remove(position);
         adapter.notifyItemRemoved(position);
-    }
+    }*/
 }
