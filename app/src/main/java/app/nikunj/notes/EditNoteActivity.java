@@ -1,34 +1,29 @@
 package app.nikunj.notes;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import app.nikunj.notes.model.Note;
-import app.nikunj.notes.model.NoteDatabaseHelper;
-import app.nikunj.notes.presenter.Constants;
+import app.nikunj.notes.presenter.EditNoteManager;
 
 public class EditNoteActivity extends ActionBarActivity {
 
-    private final static String TAG = "EditNoteActivity";
+    /*private final static String TAG = "EditNoteActivity";
     private NoteDatabaseHelper dbHelper;
     private int mPosition;
     private long mNoteId;
     private EditText mTitle;
-    private EditText mBody;
+    private EditText mBody;*/
+    private EditNoteManager nm;
 
     private void setupdatabase() {
-        dbHelper = new NoteDatabaseHelper(this);
-        dbHelper.open();
+        /*dbHelper = new NoteDatabaseHelper(this);
+        dbHelper.open();*/
     }
 
-    private Note getData(long noteID) {
+    /*private Note getData(long noteID) {
         if (dbHelper != null) {
             Cursor c = dbHelper.getNote(noteID);
             if (c != null && c.getCount() > 0) {
@@ -42,9 +37,9 @@ public class EditNoteActivity extends ActionBarActivity {
             }
         }
         return null;
-    }
+    }*/
 
-    private boolean saveData(long noteID) {
+    /*private boolean saveData(long noteID) {
         if (dbHelper == null) return false;
         String newTitle = mTitle.getText().toString();
         String newBody = mBody.getText().toString();
@@ -66,42 +61,26 @@ public class EditNoteActivity extends ActionBarActivity {
                 return false;
             }
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
+        nm = new EditNoteManager(this);
         init();
-
-
-        Intent i = getIntent();
-        if (i != null) {
-            if (i.hasExtra(Constants.NOTE_ID)) {
-                mNoteId = i.getLongExtra(Constants.NOTE_ID, -1);
-                mPosition = i.getIntExtra(Constants.POSITION, -1);
-                Toast.makeText(this, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
-                filldata(mNoteId, mPosition);
-            } else {
-                //TODO add result failed code ore something
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        } else {
-            //TODO add result failed code ore something.
-            setResult(RESULT_CANCELED);
-            finish();
-        }
+        processIntent(getIntent());
     }
 
+    private void processIntent(Intent i) {
+        nm.processIntent(i);
+    }
 
     private void init() {
-        setupdatabase();
-        mTitle = (EditText) findViewById(R.id.editTextTitle);
-        mBody = (EditText) findViewById(R.id.editTextBody);
+        nm.init();
     }
 
-    private void filldata(long noteId, int position) {
+   /* private void filldata(long noteId, int position) {
         if (noteId < 0) {
             //no need to do anything
         } else {
@@ -111,15 +90,15 @@ public class EditNoteActivity extends ActionBarActivity {
                 setTextBody(n.body);
             }
         }
-    }
+    }*/
 
-    private void setTextBody(String body) {
+  /*  private void setTextBody(String body) {
         if (mBody != null) mBody.setText(body);
-    }
+    }*/
 
-    private void setTextTitle(String title) {
+    /*private void setTextTitle(String title) {
         if (mTitle != null) mTitle.setText(title);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,19 +121,20 @@ public class EditNoteActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         //
-        if (saveData(mNoteId))
+        /*if (saveData(mNoteId))
             setResultOK();
-        else setResult(RESULT_CANCELED);
+        else setResult(RESULT_CANCELED);*/
+        nm.onBackPressed();
         finish();
     }
 
-    private void setResultOK() {
+    /*private void setResultOK() {
         Intent data = new Intent();
         data.putExtra(Constants.IS_UPDATED, true);
         data.putExtra(Constants.POSITION, mPosition);
         data.putExtra(Constants.NOTE_ID, mNoteId);
         setResult(RESULT_OK, data);
-    }
+    }*/
 
     @Override
     protected void onPause() {
