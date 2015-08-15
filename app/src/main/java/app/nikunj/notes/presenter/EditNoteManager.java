@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import app.nikunj.notes.R;
+import app.nikunj.notes.model.DatabaseConstants;
 import app.nikunj.notes.model.Note;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
@@ -16,26 +18,30 @@ import app.nikunj.notes.model.NoteDatabaseHelper;
  */
 public class EditNoteManager {
     private final static String TAG = "EditNoteManager";
-    private NoteDatabaseHelper dbHelper;
-    private Activity mActivity;
     private int mPosition;
     private long mNoteId;
+    private NoteDatabaseHelper dbHelper;
+
+    private Activity mActivity;
     private EditText mTitle;
     private EditText mBody;
-    public EditNoteManager(Activity a){
-        mActivity =a;
+
+    public EditNoteManager(Activity a) {
+        mActivity = a;
     }
+
     private void setupDataBase() {
         dbHelper = new NoteDatabaseHelper(mActivity);
         dbHelper.open();
     }
+
     private Note getData(long noteID) {
         if (dbHelper != null) {
             Cursor c = dbHelper.getNote(noteID);
             if (c != null && c.getCount() > 0) {
                 c.moveToFirst();
-                String title = c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX);
-                String body = c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX);
+                String title = c.getString(DatabaseConstants.COLUMN_TITLE_INDEX);
+                String body = c.getString(DatabaseConstants.COLUMN_BODY_INDEX);
                 return new Note(title, body, "", (int) noteID);
             } else {
                 Toast.makeText(mActivity, "invalid id :" + noteID, Toast.LENGTH_SHORT).show();
@@ -44,6 +50,7 @@ public class EditNoteManager {
         }
         return null;
     }
+
     private boolean saveData(long noteID) {
         if (dbHelper == null) return false;
         String newTitle = mTitle.getText().toString();
@@ -67,6 +74,7 @@ public class EditNoteManager {
             }
         }
     }
+
     public void processIntent(Intent i) {
         //Intent i = getIntent();
         if (i != null) {
@@ -76,21 +84,21 @@ public class EditNoteManager {
                 Toast.makeText(mActivity, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
                 filldata(mNoteId, mPosition);
             } else {
-                //TODO add result failed code ore something
                 mActivity.setResult(Activity.RESULT_CANCELED);
                 mActivity.finish();
             }
         } else {
-            //TODO add result failed code ore something.
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
     }
+
     public void init() {
         setupDataBase();
         mTitle = (EditText) mActivity.findViewById(R.id.editTextTitle);
         mBody = (EditText) mActivity.findViewById(R.id.editTextBody);
     }
+
     private void filldata(long noteId, int position) {
         if (noteId < 0) {
             //no need to do anything
@@ -102,6 +110,7 @@ public class EditNoteManager {
             }
         }
     }
+
     private void setTextBody(String body) {
         if (mBody != null) mBody.setText(body);
     }
@@ -109,6 +118,7 @@ public class EditNoteManager {
     private void setTextTitle(String title) {
         if (mTitle != null) mTitle.setText(title);
     }
+
     private void setResultOK() {
         Intent data = new Intent();
         data.putExtra(Constants.IS_UPDATED, true);
@@ -116,10 +126,19 @@ public class EditNoteManager {
         data.putExtra(Constants.NOTE_ID, mNoteId);
         mActivity.setResult(Activity.RESULT_OK, data);
     }
-    public void onBackPressed(){
+
+    public void onBackPressed() {
         if (saveData(mNoteId))
             setResultOK();
         else mActivity.setResult(Activity.RESULT_CANCELED);
+        mActivity.finish();
+    }
+
+    public void onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_save) {
+            onBackPressed();
+        }
     }
 
 }

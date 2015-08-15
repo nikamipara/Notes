@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import app.nikunj.notes.EditNoteActivity;
 import app.nikunj.notes.NotesAdapter;
 import app.nikunj.notes.R;
+import app.nikunj.notes.model.DatabaseConstants;
 import app.nikunj.notes.model.Note;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
@@ -108,7 +109,7 @@ public class FileManager {
         c = dataHelper.getAllNotes();
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            notes.add(new Note(c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX), c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX), "", c.getInt(NoteDatabaseHelper.COLUMN_ID_INDEX)));
+            notes.add(new Note(c.getString(DatabaseConstants.COLUMN_TITLE_INDEX), c.getString(DatabaseConstants.COLUMN_BODY_INDEX), "", c.getInt(DatabaseConstants.COLUMN_ID_INDEX)));
             c.moveToNext();
         }
         c.close();
@@ -133,8 +134,8 @@ public class FileManager {
         Cursor c = dataHelper.getNote(id);
         if (c != null) {
             c.moveToFirst();
-            String title = c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX);
-            String body = c.getString(NoteDatabaseHelper.COLUMN_BODY_INDEX);
+            String title = c.getString(DatabaseConstants.COLUMN_TITLE_INDEX);
+            String body = c.getString(DatabaseConstants.COLUMN_BODY_INDEX);
             return new Note(title, body, "", (int) id);
         }
         return null;
@@ -198,7 +199,7 @@ public class FileManager {
             String trace = "";
             c.moveToFirst();
             while (!c.isAfterLast()) {
-                trace += "id:" + c.getLong(NoteDatabaseHelper.COLUMN_ID_INDEX) + " title:" + c.getString(NoteDatabaseHelper.COLUMN_TITLE_INDEX) + "\n";
+                trace += "id:" + c.getLong(DatabaseConstants.COLUMN_ID_INDEX) + " title:" + c.getString(DatabaseConstants.COLUMN_TITLE_INDEX) + "\n";
                 c.moveToNext();
             }
             c.close();
