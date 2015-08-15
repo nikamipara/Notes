@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import app.nikunj.notes.model.Note;
+
 /**
  * adapter for notes custom supports recycler view.
  * Created by nikam on 08-08-2015.
@@ -139,16 +141,18 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     private void populate(ViewHolder holder, int position) {
-        app.nikunj.notes.Note note = notes.get(position);
+        Note note = notes.get(position);
         int size = 30;/*
         int titlesize = size -note.title.length();
         if(titlesize<8)titlesize=;*/
         size = 60;
         int bodysize = size - note.body.length();
-        if (bodysize < 10) bodysize = 10;
+        if(note.body.length()==0)bodysize=0;
+        else if (bodysize < 10) bodysize = 10;
         holder._id = note.id;
         holder.title.setText(trimTitle(note.title));
-        holder.title.setTextSize(15);
+        if(note.title.isEmpty())holder.title.setTextSize(0);
+        else holder.title.setTextSize(15);
         holder.body.setText(trimBody(note.body));
         holder.body.setTextSize(bodysize);
     }

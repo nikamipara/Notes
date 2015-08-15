@@ -10,11 +10,12 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import app.nikunj.notes.model.Note;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 import app.nikunj.notes.presenter.Constants;
 
 public class EditNoteActivity extends ActionBarActivity {
-    public static final String IS_UPDATED = "isnoteupdated";
+
     private final static String TAG = "EditNoteActivity";
     private NoteDatabaseHelper dbHelper;
     private int mPosition;
@@ -149,7 +150,7 @@ public class EditNoteActivity extends ActionBarActivity {
 
     private void setResultOK() {
         Intent data = new Intent();
-        data.putExtra(IS_UPDATED, true);
+        data.putExtra(Constants.IS_UPDATED, true);
         data.putExtra(Constants.POSITION, mPosition);
         data.putExtra(Constants.NOTE_ID, mNoteId);
         setResult(RESULT_OK, data);

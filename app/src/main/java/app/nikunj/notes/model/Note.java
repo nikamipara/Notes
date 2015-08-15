@@ -1,4 +1,4 @@
-package app.nikunj.notes;
+package app.nikunj.notes.model;
 
 /** container having data.
  * Created by Nikunj Amipara

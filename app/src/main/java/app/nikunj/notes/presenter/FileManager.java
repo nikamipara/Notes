@@ -17,9 +17,9 @@ import android.view.View;
 import java.util.ArrayList;
 
 import app.nikunj.notes.EditNoteActivity;
-import app.nikunj.notes.Note;
 import app.nikunj.notes.NotesAdapter;
 import app.nikunj.notes.R;
+import app.nikunj.notes.model.Note;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
 public class FileManager {
@@ -73,7 +73,7 @@ public class FileManager {
         // if (requestCode == REQUEST_EDIT) {
         if (data != null) {
             Log.d("nikunj", "data not null");
-            boolean isUpdated = data.getBooleanExtra(EditNoteActivity.IS_UPDATED, true);
+            boolean isUpdated = data.getBooleanExtra(Constants.IS_UPDATED, true);
             int position = data.getIntExtra(Constants.POSITION, -1);
             long noteId = data.getLongExtra(Constants.NOTE_ID, -1);
             updateList(isUpdated, position, noteId);
