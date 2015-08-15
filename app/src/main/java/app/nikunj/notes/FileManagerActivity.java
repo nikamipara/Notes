@@ -17,11 +17,11 @@ public class FileManagerActivity extends ActionBarActivity {
         setContentView(R.layout.activity_file_manager);
         fm = new FileManager(this);
         setRecyclerView(R.id.recycler_view_notes);
-        startloadingdata();
+        loadData();
     }
 
-    private void startloadingdata() {
-        fm.startloadingdata();
+    private void loadData() {
+        fm.loadData();
     }
 
     @Override

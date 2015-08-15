@@ -52,8 +52,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         public ViewHolder(final View itemView) {
             super(itemView);
             this.root = itemView;
-            this.title = (TextView) itemView.findViewById(R.id.tvName);
-            this.body = (TextView) itemView.findViewById(R.id.tvHometown);
+            this.title = (TextView) itemView.findViewById(R.id.item_note_title);
+            this.body = (TextView) itemView.findViewById(R.id.item_note_body);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

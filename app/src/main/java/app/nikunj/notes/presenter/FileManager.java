@@ -87,7 +87,7 @@ public class FileManager {
 
     }
 
-    public void startloadingdata() {
+    public void loadData() {
 
         setupdatabase();
         Cursor c = dataHelper.getAllNotes();
