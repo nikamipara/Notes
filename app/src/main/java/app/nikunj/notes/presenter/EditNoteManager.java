@@ -81,7 +81,7 @@ public class EditNoteManager {
             if (i.hasExtra(Constants.NOTE_ID)) {
                 mNoteId = i.getLongExtra(Constants.NOTE_ID, -1);
                 mPosition = i.getIntExtra(Constants.POSITION, -1);
-                Toast.makeText(mActivity, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
+               // Toast.makeText(mActivity, "data got id:" + mNoteId + "position=" + mPosition, Toast.LENGTH_LONG).show();
                 filldata(mNoteId, mPosition);
             } else {
                 mActivity.setResult(Activity.RESULT_CANCELED);

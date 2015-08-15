@@ -93,17 +93,14 @@ public class FileManager {
         Cursor c = dataHelper.getAllNotes();
         int noofrows = c.getCount();
         if (noofrows == 0) {
-            dataHelper.createNote("Dany Targaryen", "Valyria");
-            dataHelper.createNote("Rob Stark", "Winterfell");
-            dataHelper.createNote("Jon Snow", "Castle Black");
-            dataHelper.createNote("Jon Snow", "Castle Black");
-            dataHelper.createNote("Tyvin Lanister", "King's Landing");
-            dataHelper.createNote("Agon Targaryen", "Valyria");
-            dataHelper.createNote("Tyvin Lanister", "King's Landing");
-            dataHelper.createNote("Arya Stark", "Winterfell");
-            dataHelper.createNote("Imp", "King's Landing");
-            dataHelper.createNote("Dany Targaryen", "Valyria");
-
+            dataHelper.createNote("Note 1", "Body One");
+            dataHelper.createNote("Note 2", "Body two");
+            dataHelper.createNote("Note 3", "Body tree");
+            dataHelper.createNote("Note 4", "Body Four");
+            dataHelper.createNote("Note 5", "Body Five");
+            dataHelper.createNote("Note 6", "Body Six");
+            dataHelper.createNote("Note 7", "Body Seven");
+            dataHelper.createNote("Note 8", "Body Eight");
         }
         c.close();
         c = dataHelper.getAllNotes();
