@@ -1,6 +1,6 @@
 package app.nikunj.notes.model;
 
-/** container having data.
+/** container having note data.
  * Created by Nikunj Amipara
  * on 08-08-2015.
  */

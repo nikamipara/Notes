@@ -1,6 +1,6 @@
 package app.nikunj.notes.model;
 
-/**
+/** all database related constants.
  * Created by Nikunj on 8/15/2015.
  */
 public class DatabaseConstants {

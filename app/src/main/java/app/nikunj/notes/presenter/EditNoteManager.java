@@ -13,7 +13,7 @@ import app.nikunj.notes.model.DatabaseConstants;
 import app.nikunj.notes.model.Note;
 import app.nikunj.notes.model.NoteDatabaseHelper;
 
-/**
+/** data handler for edit note activity
  * Created by Nikunj on 8/15/2015.
  */
 public class EditNoteManager {
